@@ -21,6 +21,12 @@ This bot is provided as-is, without any warranty. The **Morpho Association is no
 
 Use at your own risk.
 
+## 🆕 New to Liquidation Bots?
+
+**If you're a complete beginner**, check out our **[Step-by-Step Deployment Guide](./DEPLOYMENT_GUIDE.md)** which walks you through everything from creating a wallet to deploying on Railway, including a breakdown of costs for a $250 starting budget.
+
+---
+
 ## Requirements
 
 - Node.js >= 20
