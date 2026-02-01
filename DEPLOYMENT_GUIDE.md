@@ -6,12 +6,41 @@ This guide shows you how to run the liquidation bot **locally on your own comput
 
 ---
 
+## 🚨 Already ran `pnpm install`? Here's what to do next!
+
+If you've already downloaded the bot and ran `pnpm install`, you're almost there! Do these 4 things:
+
+### ✅ Step A: Make sure Docker is running
+Open Docker Desktop (look for the whale icon). The database needs Docker.
+
+### ✅ Step B: Start the database
+```bash
+docker-compose up -d
+```
+
+### ✅ Step C: Configure your .env file (if you haven't)
+Copy `.env.example` to `.env` and fill in:
+- `RPC_URL_8453` - Your Alchemy URL ([Get one free](#step-3-get-a-free-rpc-url))
+- `EXECUTOR_ADDRESS_8453` - Your executor contract ([Deploy one](#step-4-deploy-your-executor-contract))
+- `LIQUIDATION_PRIVATE_KEY_8453` - Your wallet's private key
+
+### ✅ Step D: Start the bot!
+```bash
+pnpm liquidate
+```
+
+**That's it!** The bot will start indexing (10-60 min first time), then watch for liquidations.
+
+> 📖 If you're missing any of the above, follow the full guide below.
+
+---
+
 ## 📋 Table of Contents
 
 1. [What is This Bot?](#what-is-this-bot)
 2. [What You'll Need](#what-youll-need)
 3. [Budget Breakdown ($250)](#budget-breakdown-250)
-4. [Step 1: Install Docker Desktop](#step-1-install-docker-desktop)
+4. [Step 1: Install Prerequisites](#step-1-install-prerequisites)
 5. [Step 2: Create a Dedicated Wallet](#step-2-create-a-dedicated-wallet)
 6. [Step 3: Get a Free RPC URL](#step-3-get-a-free-rpc-url)
 7. [Step 4: Deploy Your Executor Contract](#step-4-deploy-your-executor-contract)
@@ -67,12 +96,15 @@ Since you're running locally, you save on hosting! Here's how to use your $250:
 
 ---
 
-## Step 1: Install Docker Desktop
+## Step 1: Install Prerequisites
 
-Docker lets you run the bot in a container—no complicated setup needed.
+You need three things installed: **Docker**, **Node.js**, and **pnpm**.
 
-### Windows
+### 1.1 Install Docker Desktop
 
+Docker runs the database for the bot.
+
+**Windows:**
 1. Go to [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 2. Click **"Download for Windows"**
 3. Run the installer (`Docker Desktop Installer.exe`)
@@ -81,8 +113,7 @@ Docker lets you run the bot in a container—no complicated setup needed.
 6. Open Docker Desktop from your Start menu
 7. Wait for it to say "Docker Desktop is running"
 
-### Mac
-
+**Mac:**
 1. Go to [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
 2. Click **"Download for Mac"** (choose Intel or Apple Chip based on your Mac)
 3. Open the `.dmg` file
@@ -91,10 +122,7 @@ Docker lets you run the bot in a container—no complicated setup needed.
 6. Click "Open" if you see a security warning
 7. Wait for it to say "Docker Desktop is running"
 
-### Linux (Ubuntu/Debian)
-
-Open a terminal and run:
-
+**Linux (Ubuntu/Debian):**
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com | sh
@@ -106,13 +134,52 @@ sudo usermod -aG docker $USER
 docker --version
 ```
 
-### ✅ Verify Docker is Working
+### 1.2 Install Node.js
 
-Open a terminal (or PowerShell on Windows) and run:
+**Windows:**
+1. Download Node.js from [nodejs.org](https://nodejs.org) (choose **LTS** version)
+2. Run the installer
+3. Click "Next" through all prompts (use defaults)
+4. **Open a NEW terminal window after installation**
+
+**Mac:**
+```bash
+# If you have Homebrew:
+brew install node
+
+# Or download from nodejs.org
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt install -y nodejs
+```
+
+### 1.3 Install pnpm
+
+After Node.js is installed, open a terminal and run:
+
+```bash
+npm install -g pnpm
+```
+
+### ✅ Verify Everything is Installed
+
+Run these commands (you should see version numbers):
 
 ```bash
 docker --version
+# Example output: Docker version 24.0.x
+
+node --version
+# Example output: v20.x.x
+
+pnpm --version
+# Example output: 9.x.x
 ```
+
+If any command says "not found", re-install that tool and **open a new terminal window**.
 
 You should see something like: `Docker version 24.0.x`
 
@@ -258,21 +325,25 @@ LIQUIDATION_PRIVATE_KEY_8453=0x4c0883a69102937d6231471b5dbb6204fe5129617082790ab
 
 ## Step 6: Start the Bot
 
-### 6.1 Open a Terminal
+Now you're ready to run! Follow these steps in order.
 
-**Windows:** Press `Win + R`, type `cmd`, press Enter. Then navigate to your bot folder:
+### 6.1 Open a Terminal in the Bot Folder
+
+**Windows:** Press `Win + R`, type `cmd`, press Enter. Then:
 ```bash
 cd C:\path\to\morpho-blue-liquidation-bot
 ```
 
-**Mac/Linux:** Open Terminal and navigate:
+**Mac/Linux:** Open Terminal and:
 ```bash
 cd ~/liquidation-bot/morpho-blue-liquidation-bot
 ```
 
-### 6.2 Start the Database
+### 6.2 Make Sure Docker Desktop is Running
 
-The bot needs a database. Docker makes this easy:
+Look for the whale icon in your system tray/menu bar. If Docker isn't running, open Docker Desktop and wait for it to start.
+
+### 6.3 Start the Database
 
 ```bash
 docker-compose up -d
@@ -283,42 +354,21 @@ You should see:
 Creating morpho_blue_liquidation_bot_postgres ... done
 ```
 
-### 6.3 Install Dependencies and Run
+### 6.4 Install Dependencies (First Time Only)
 
-**First time only—install Node.js and pnpm:**
-
-**Windows:**
-1. Download Node.js from [nodejs.org](https://nodejs.org) (LTS version)
-2. Run the installer
-3. Open a NEW terminal window
-
-**Mac:**
-```bash
-brew install node
-```
-
-**Linux:**
-```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-sudo apt install -y nodejs
-```
-
-**Install pnpm (all platforms):**
-```bash
-npm install -g pnpm
-```
-
-**Install bot dependencies:**
 ```bash
 pnpm install
 ```
 
-**Start the bot:**
+This downloads all the code the bot needs. Takes 1-2 minutes.
+
+### 6.5 Start the Bot! 🚀
+
 ```bash
 pnpm liquidate
 ```
 
-### 6.4 What You'll See
+### 6.6 What You'll See
 
 ```
 Starting liquidation bot...
@@ -327,7 +377,7 @@ Progress: 10%... 25%... 50%... 75%... 100%
 Chain fully indexed. Watching for liquidatable positions...
 ```
 
-The first run takes **10-60 minutes** to index the blockchain. After that, it watches for opportunities!
+**First run takes 10-60 minutes** to index the blockchain. After that, it watches for opportunities!
 
 > 💡 **Keep this terminal window open!** Closing it stops the bot.
 
