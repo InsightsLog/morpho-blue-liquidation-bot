@@ -1,537 +1,560 @@
-# 🚀 Beginner's Complete Guide to Deploying the Morpho Blue Liquidation Bot
+# 🚀 Beginner's Guide: Run the Morpho Blue Liquidation Bot on YOUR Computer
 
-Welcome! This guide will walk you through deploying your own liquidation bot step-by-step, even if you've never done anything like this before. We'll cover everything from setting up a wallet to running your bot 24/7.
+This guide shows you how to run the liquidation bot **locally on your own computer** (Windows, Mac, or Linux). No cloud services needed—just your machine.
+
+> ⚠️ **Important:** Your computer must stay ON and connected to the internet for the bot to work. If you close your laptop or lose internet, the bot stops.
+
+---
 
 ## 📋 Table of Contents
 
 1. [What is This Bot?](#what-is-this-bot)
-2. [Before You Start (Prerequisites)](#before-you-start-prerequisites)
+2. [What You'll Need](#what-youll-need)
 3. [Budget Breakdown ($250)](#budget-breakdown-250)
-4. [Step 1: Create a Dedicated Wallet](#step-1-create-a-dedicated-wallet)
-5. [Step 2: Get RPC Access (Alchemy)](#step-2-get-rpc-access-alchemy)
-6. [Step 3: Choose Your Hosting (Railway Recommended)](#step-3-choose-your-hosting-railway-recommended)
-7. [Step 4: Deploy the Bot](#step-4-deploy-the-bot)
-8. [Step 5: Deploy the Executor Contract](#step-5-deploy-the-executor-contract)
-9. [Step 6: Configure and Run](#step-6-configure-and-run)
-10. [Step 7: Monitor Your Bot](#step-7-monitor-your-bot)
-11. [Claiming Your Profits](#claiming-your-profits)
+4. [Step 1: Install Docker Desktop](#step-1-install-docker-desktop)
+5. [Step 2: Create a Dedicated Wallet](#step-2-create-a-dedicated-wallet)
+6. [Step 3: Get a Free RPC URL](#step-3-get-a-free-rpc-url)
+7. [Step 4: Deploy Your Executor Contract](#step-4-deploy-your-executor-contract)
+8. [Step 5: Download and Configure the Bot](#step-5-download-and-configure-the-bot)
+9. [Step 6: Start the Bot](#step-6-start-the-bot)
+10. [Step 7: Monitor and Claim Profits](#step-7-monitor-and-claim-profits)
+11. [Stopping and Restarting](#stopping-and-restarting)
 12. [Troubleshooting](#troubleshooting)
-13. [Security Best Practices](#security-best-practices)
-14. [FAQ](#faq)
+13. [FAQ](#faq)
 
 ---
 
 ## What is This Bot?
 
-A **liquidation bot** monitors lending protocols (in this case, Morpho Blue) for unhealthy loan positions. When someone's collateral drops below the required threshold, the bot steps in to liquidate the position—paying off part of the debt and receiving the collateral (plus a bonus) in return.
-
-**The profit** comes from the liquidation bonus—you get collateral worth slightly more than the debt you repay. The bot automates this entire process.
+A **liquidation bot** watches for unhealthy loans on Morpho Blue. When someone's collateral drops too low, your bot can liquidate it and earn a bonus. The bot automates finding and executing these opportunities.
 
 ### ⚠️ Important Disclaimer
 
-- **This is not guaranteed profit.** You can lose money through gas fees, failed transactions, or market conditions.
-- **You need capital at risk.** Your wallet will need ETH/tokens to pay for gas.
-- **Competition is fierce.** Many sophisticated bots are running 24/7.
-- Start small and learn before scaling up.
+- **No guaranteed profit.** You can lose money on gas fees and failed transactions.
+- **Your wallet needs ETH** to pay for gas.
+- **Competition is real.** Other bots are running too.
+- Start small and learn!
 
 ---
 
-## Before You Start (Prerequisites)
+## What You'll Need
 
-### What You Need
+| Item | Where to Get It | Cost |
+|------|-----------------|------|
+| A computer (Windows/Mac/Linux) | You probably have one! | $0 |
+| Docker Desktop | Free download | $0 |
+| MetaMask browser extension | metamask.io | $0 |
+| Alchemy account | alchemy.com | $0 (free tier) |
+| ETH in your wallet | Buy on Coinbase, etc. | ~$100-200 |
 
-| Requirement | Description | Difficulty |
-|-------------|-------------|------------|
-| Basic computer skills | Copy/paste, use websites | Easy |
-| A credit/debit card | To pay for hosting | Easy |
-| Email address | For account signups | Easy |
-| Patience | This takes 1-2 hours to set up | - |
-
-### What You DON'T Need
-
-- ❌ Programming knowledge
-- ❌ Server administration skills
-- ❌ Prior crypto/DeFi experience (helpful but not required)
+**Total software cost: $0**
 
 ---
 
 ## Budget Breakdown ($250)
 
-Here's how your $250 budget could be allocated:
+Since you're running locally, you save on hosting! Here's how to use your $250:
 
-| Expense | Monthly Cost | First Month | Notes |
-|---------|-------------|-------------|-------|
-| **Hosting (Railway)** | $5-20 | $5-20 | Pay-as-you-go |
-| **RPC Provider (Alchemy)** | $0 | $0 | Free tier sufficient |
-| **Gas for Operations** | $50-150 | $100-200 | Varies by activity |
-| **Executor Deployment** | One-time | $10-50 | Per chain |
-| **Safety Buffer** | - | $50+ | For unexpected costs |
+| Expense | Cost | Notes |
+|---------|------|-------|
+| **Hosting** | $0 | Your computer! |
+| **RPC Provider** | $0 | Alchemy free tier |
+| **Executor Deployment** | $10-50 | One-time per chain |
+| **Gas for Operations** | $150-200 | Main expense |
+| **Safety Buffer** | $50+ | For unexpected costs |
 
-**Recommended starting allocation:**
-- $100-150 in wallet for gas + executor deployment
-- $50 for first 2-3 months of hosting
-- $50-100 as reserve/safety buffer
+**Recommended:** Start with **Base** chain (~$50-100 in ETH) for lower gas costs.
 
 ---
 
-## Step 1: Create a Dedicated Wallet
+## Step 1: Install Docker Desktop
 
-> ⚠️ **CRITICAL SECURITY RULE:** Never use your main wallet! Create a brand new wallet just for this bot.
+Docker lets you run the bot in a container—no complicated setup needed.
 
-### Why a Dedicated Wallet?
+### Windows
 
-- If the private key is compromised, only bot funds are at risk
-- Easier to track bot profits/losses
-- Cleaner transaction history
+1. Go to [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
+2. Click **"Download for Windows"**
+3. Run the installer (`Docker Desktop Installer.exe`)
+4. Follow the prompts (use defaults)
+5. **Restart your computer** when asked
+6. Open Docker Desktop from your Start menu
+7. Wait for it to say "Docker Desktop is running"
 
-### Create Your Wallet
+### Mac
 
-#### Option A: MetaMask (Beginner-Friendly)
+1. Go to [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
+2. Click **"Download for Mac"** (choose Intel or Apple Chip based on your Mac)
+3. Open the `.dmg` file
+4. Drag Docker to your Applications folder
+5. Open Docker from Applications
+6. Click "Open" if you see a security warning
+7. Wait for it to say "Docker Desktop is running"
 
-1. Go to [metamask.io](https://metamask.io)
-2. Download the browser extension
-3. Click "Create a new wallet"
-4. **WRITE DOWN YOUR SEED PHRASE ON PAPER** (not digitally!)
-5. Set a strong password
-6. Click the three dots → "Account details" → "Show private key"
-7. **Save this private key securely** (you'll need it later)
+### Linux (Ubuntu/Debian)
 
-#### Option B: Command Line (More Secure)
-
-If you're comfortable with terminal:
+Open a terminal and run:
 
 ```bash
-# Using cast from Foundry
-cast wallet new
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# Add yourself to docker group (so you don't need sudo)
+sudo usermod -aG docker $USER
+
+# Log out and back in, then verify:
+docker --version
 ```
+
+### ✅ Verify Docker is Working
+
+Open a terminal (or PowerShell on Windows) and run:
+
+```bash
+docker --version
+```
+
+You should see something like: `Docker version 24.0.x`
+
+---
+
+## Step 2: Create a Dedicated Wallet
+
+> ⚠️ **NEVER use your main wallet!** Create a new one just for this bot.
+
+### Create a New MetaMask Wallet
+
+1. Install MetaMask: [metamask.io](https://metamask.io)
+2. Click the MetaMask icon → Click your account icon → **"Add account or hardware wallet"**
+3. Choose **"Add a new account"**
+4. Name it "Liquidation Bot"
+5. Click on the account → Three dots → **"Account details"**
+6. Click **"Show private key"**
+7. Enter your password
+8. **COPY AND SAVE THE PRIVATE KEY SOMEWHERE SAFE** (you'll need it soon!)
+
+The private key looks like: `0x1234abcd...` (64 characters after 0x)
 
 ### Fund Your Wallet
 
-Transfer ETH to your new wallet address:
+Send ETH to your new wallet address. For **Base** chain (recommended for beginners):
 
-| Chain | Recommended Starting Amount | Purpose |
-|-------|---------------------------|---------|
-| Ethereum Mainnet | 0.1-0.2 ETH (~$250-500) | Gas + deployment |
-| Base | 0.01-0.05 ETH (~$25-125) | Gas + deployment |
-| Arbitrum | 0.01-0.05 ETH (~$25-125) | Gas + deployment |
-
-> **Tip for $250 budget:** Start with ONE chain (Base recommended—lower gas costs) with ~$100 in ETH.
+1. Get your wallet address from MetaMask
+2. Send **0.02-0.05 ETH** (~$50-125) to that address on Base
+3. You can bridge from Ethereum using [bridge.base.org](https://bridge.base.org)
 
 ---
 
-## Step 2: Get RPC Access (Alchemy)
+## Step 3: Get a Free RPC URL
 
-An **RPC (Remote Procedure Call)** lets your bot communicate with the blockchain. Think of it as your bot's "phone line" to Ethereum.
+An RPC URL lets your bot talk to the blockchain.
 
-### Set Up Alchemy (Free Tier)
+### Set Up Alchemy (Free)
 
 1. Go to [alchemy.com](https://www.alchemy.com)
-2. Click "Sign Up" → Create account (use your email)
-3. Once logged in, click "Create new app"
+2. Click **"Sign Up"** and create an account
+3. Once logged in, click **"Create new app"**
 4. Fill in:
-   - **Name:** `morpho-liquidation-bot`
-   - **Chain:** Select the chain you want (e.g., "Ethereum Mainnet" or "Base")
-5. Click "Create app"
-6. Click on your new app → "API Key" tab
-7. Copy your **HTTPS URL** - it looks like:
-   ```
-   https://eth-mainnet.g.alchemy.com/v2/YOUR-API-KEY-HERE
-   ```
+   - **Name:** `morpho-bot`
+   - **Chain:** Choose your chain (e.g., "Base Mainnet")
+5. Click **"Create app"**
+6. Click on your app → **"API Key"** tab
+7. Copy the **HTTPS** URL
 
-### Create Apps for Each Chain You Want
+It looks like: `https://base-mainnet.g.alchemy.com/v2/YOUR-KEY-HERE`
 
-Repeat for each blockchain:
+**Save this URL!** You'll need it in Step 5.
 
-| Chain | Chain ID | Alchemy Network Name |
-|-------|----------|---------------------|
-| Ethereum Mainnet | 1 | Ethereum Mainnet |
+### Chain IDs Reference
+
+| Chain | Chain ID | Alchemy Name |
+|-------|----------|--------------|
+| Ethereum | 1 | Ethereum Mainnet |
 | Base | 8453 | Base Mainnet |
 | Arbitrum | 42161 | Arbitrum Mainnet |
 
-> **Note:** Save each RPC URL. You'll need them formatted as `RPC_URL_1`, `RPC_URL_8453`, etc.
+---
+
+## Step 4: Deploy Your Executor Contract
+
+The bot needs a special contract to execute liquidations. You only do this **once per chain**.
+
+### Easiest Method: Web Interface
+
+1. Go to [rubilmax.github.io/executooor](https://rubilmax.github.io/executooor/)
+2. Click **"Connect Wallet"** and connect your bot wallet (from Step 2)
+3. Switch to your desired network (Base, Ethereum, etc.)
+4. Click **"Deploy"**
+5. Confirm the transaction in MetaMask
+6. **COPY THE DEPLOYED CONTRACT ADDRESS!**
+
+The address looks like: `0xAbCd1234...`
+
+**Save this address!** You'll need it in Step 5.
 
 ---
 
-## Step 3: Choose Your Hosting (Railway Recommended)
+## Step 5: Download and Configure the Bot
 
-### Option A: Railway (Recommended for Beginners)
+### 5.1 Download the Bot
 
-**Why Railway?**
-- ✅ One-click deployment from GitHub
-- ✅ $5 free credit to start
-- ✅ No server management needed
-- ✅ Auto-restarts if bot crashes
-- ✅ Easy environment variable management
+**Option A: Download ZIP (Easiest)**
 
-**Cost:** ~$5-20/month depending on usage
+1. Go to [github.com/morpho-org/morpho-blue-liquidation-bot](https://github.com/morpho-org/morpho-blue-liquidation-bot)
+2. Click the green **"Code"** button
+3. Click **"Download ZIP"**
+4. Extract the ZIP to a folder (e.g., `C:\liquidation-bot` on Windows or `~/liquidation-bot` on Mac/Linux)
 
-### Option B: DigitalOcean/Vultr VPS
-
-**Why VPS?**
-- ✅ Fixed monthly cost ($5-10/month)
-- ✅ More control
-- ❌ Requires more technical knowledge
-- ❌ Manual setup and maintenance
-
----
-
-## Step 4: Deploy the Bot
-
-### Railway Deployment (Recommended)
-
-#### 4.1 Create Railway Account
-
-1. Go to [railway.app](https://railway.app)
-2. Click "Login" → "Login with GitHub"
-3. If you don't have GitHub, create one at [github.com](https://github.com)
-4. Authorize Railway to access your GitHub
-
-#### 4.2 Fork the Repository
-
-1. Go to the original repo: [github.com/morpho-org/morpho-blue-liquidation-bot](https://github.com/morpho-org/morpho-blue-liquidation-bot)
-2. Click the "Fork" button (top right)
-3. Select your account
-4. Now you have your own copy at `github.com/YOUR-USERNAME/morpho-blue-liquidation-bot`
-
-#### 4.3 Deploy to Railway
-
-1. In Railway dashboard, click "New Project"
-2. Select "Deploy from GitHub repo"
-3. Find and select `morpho-blue-liquidation-bot`
-4. Railway will detect the Dockerfile and start building
-
-#### 4.4 Add PostgreSQL Database
-
-The bot needs a database to track blockchain data:
-
-1. In your Railway project, click "New"
-2. Select "Database" → "PostgreSQL"
-3. Once created, click on the PostgreSQL service
-4. Go to "Variables" tab
-5. Copy the `DATABASE_URL` value
-
-#### 4.5 Configure Environment Variables
-
-1. Click on your bot service (not the database)
-2. Go to "Variables" tab
-3. Click "New Variable" for each of these:
-
-**Required Variables (for each chain):**
-
-```
-# For Ethereum Mainnet (Chain ID: 1)
-RPC_URL_1 = https://eth-mainnet.g.alchemy.com/v2/YOUR-API-KEY
-
-# For Base (Chain ID: 8453)
-RPC_URL_8453 = https://base-mainnet.g.alchemy.com/v2/YOUR-API-KEY
-
-# Your private key (same for all chains)
-LIQUIDATION_PRIVATE_KEY = 0xYOUR_PRIVATE_KEY_HERE
-
-# Database URL (copy from PostgreSQL service)
-POSTGRES_DATABASE_URL = postgresql://postgres:xxxx@xxx.railway.app:5432/railway
-```
-
-> ⚠️ **Never share your private key!** Railway keeps variables encrypted.
-
-### Alternative: VPS Deployment
-
-<details>
-<summary>Click to expand VPS instructions</summary>
-
-#### Requirements
-- Ubuntu 22.04 VPS ($5-10/month from DigitalOcean, Vultr, or Hetzner)
-- SSH access
-
-#### Setup Steps
+**Option B: Using Git**
 
 ```bash
-# 1. Connect to your VPS
-ssh root@YOUR_VPS_IP
-
-# 2. Update system
-apt update && apt upgrade -y
-
-# 3. Install Node.js 20+
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-
-# 4. Install pnpm
-npm install -g pnpm
-
-# 5. Install Docker (for PostgreSQL)
-curl -fsSL https://get.docker.com | sh
-
-# 6. Clone the repository
 git clone https://github.com/morpho-org/morpho-blue-liquidation-bot.git
 cd morpho-blue-liquidation-bot
+```
 
-# 7. Install dependencies
-pnpm install
+### 5.2 Create Your Configuration File
 
-# 8. Start PostgreSQL
+1. Open the bot folder
+2. Find the file called `.env.example`
+3. **Make a copy** and rename it to `.env` (just `.env`, no `.example`)
+
+### 5.3 Edit the .env File
+
+Open `.env` in a text editor (Notepad on Windows, TextEdit on Mac) and fill in your values:
+
+**For Base chain (recommended):**
+
+```bash
+# Your Alchemy RPC URL (from Step 3)
+RPC_URL_8453=https://base-mainnet.g.alchemy.com/v2/YOUR-KEY-HERE
+
+# Your executor contract address (from Step 4)
+EXECUTOR_ADDRESS_8453=0xYOUR_EXECUTOR_ADDRESS_HERE
+
+# Your wallet's private key (from Step 2)
+# IMPORTANT: Include the 0x at the start!
+LIQUIDATION_PRIVATE_KEY_8453=0xYOUR_PRIVATE_KEY_HERE
+```
+
+**For Ethereum mainnet (higher gas costs):**
+
+```bash
+RPC_URL_1=https://eth-mainnet.g.alchemy.com/v2/YOUR-KEY-HERE
+EXECUTOR_ADDRESS_1=0xYOUR_EXECUTOR_ADDRESS_HERE
+LIQUIDATION_PRIVATE_KEY_1=0xYOUR_PRIVATE_KEY_HERE
+```
+
+**Example completed .env for Base:**
+
+```bash
+RPC_URL_8453=https://base-mainnet.g.alchemy.com/v2/abc123xyz789
+EXECUTOR_ADDRESS_8453=0x742d35Cc6634C0532925a3b844Bc9e7595f2bD12
+LIQUIDATION_PRIVATE_KEY_8453=0x4c0883a69102937d6231471b5dbb6204fe5129617082790abe5d523bd2c246a3
+```
+
+> ⚠️ **Never share your .env file or private key with anyone!**
+
+---
+
+## Step 6: Start the Bot
+
+### 6.1 Open a Terminal
+
+**Windows:** Press `Win + R`, type `cmd`, press Enter. Then navigate to your bot folder:
+```bash
+cd C:\path\to\morpho-blue-liquidation-bot
+```
+
+**Mac/Linux:** Open Terminal and navigate:
+```bash
+cd ~/liquidation-bot/morpho-blue-liquidation-bot
+```
+
+### 6.2 Start the Database
+
+The bot needs a database. Docker makes this easy:
+
+```bash
 docker-compose up -d
+```
 
-# 9. Create .env file
-cp .env.example .env
-nano .env  # Edit with your values
+You should see:
+```
+Creating morpho_blue_liquidation_bot_postgres ... done
+```
 
-# 10. Run the bot (use screen or pm2 for persistence)
+### 6.3 Install Dependencies and Run
+
+**First time only—install Node.js and pnpm:**
+
+**Windows:**
+1. Download Node.js from [nodejs.org](https://nodejs.org) (LTS version)
+2. Run the installer
+3. Open a NEW terminal window
+
+**Mac:**
+```bash
+brew install node
+```
+
+**Linux:**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+sudo apt install -y nodejs
+```
+
+**Install pnpm (all platforms):**
+```bash
+npm install -g pnpm
+```
+
+**Install bot dependencies:**
+```bash
+pnpm install
+```
+
+**Start the bot:**
+```bash
 pnpm liquidate
 ```
 
-**Keep bot running with PM2:**
-```bash
-npm install -g pm2
-pm2 start "pnpm liquidate" --name liquidation-bot
-pm2 save
-pm2 startup  # Follow the instructions it gives
+### 6.4 What You'll See
+
+```
+Starting liquidation bot...
+Indexing chain 8453 (Base)...
+Progress: 10%... 25%... 50%... 75%... 100%
+Chain fully indexed. Watching for liquidatable positions...
 ```
 
-</details>
+The first run takes **10-60 minutes** to index the blockchain. After that, it watches for opportunities!
+
+> 💡 **Keep this terminal window open!** Closing it stops the bot.
 
 ---
 
-## Step 5: Deploy the Executor Contract
+## Step 7: Monitor and Claim Profits
 
-The bot uses a special "executor" contract to perform liquidations. You need to deploy one per chain.
+### Watching the Logs
 
-### Option A: Using the Web Interface (Easiest)
-
-1. Go to [rubilmax.github.io/executooor](https://rubilmax.github.io/executooor/)
-2. Connect your bot wallet (the one with the private key you're using)
-3. Select the network (Ethereum, Base, etc.)
-4. Click "Deploy"
-5. Confirm the transaction in your wallet
-6. **Save the deployed contract address!**
-
-### Option B: Using the Bot's Built-in Command
-
-If you have the bot running locally:
-
-```bash
-# Make sure .env has RPC_URL and LIQUIDATION_PRIVATE_KEY set
-pnpm deploy:executor
-```
-
-This deploys to ALL chains configured in your .env file and prints the addresses.
-
-### Add Executor Addresses to Railway
-
-After deploying, add these to your Railway variables:
+Keep an eye on your terminal. You'll see messages like:
 
 ```
-# Replace with your actual deployed addresses
-EXECUTOR_ADDRESS_1 = 0xYOUR_MAINNET_EXECUTOR_ADDRESS
-EXECUTOR_ADDRESS_8453 = 0xYOUR_BASE_EXECUTOR_ADDRESS
+[INFO] Checking positions...
+[INFO] Found liquidatable position! Evaluating profitability...
+[INFO] Executing liquidation: 0x...
+[SUCCESS] Liquidation completed! Profit: $X.XX
 ```
 
----
-
-## Step 6: Configure and Run
-
-### Verify All Variables Are Set
-
-Your Railway (or .env) should have these for each chain:
-
-| Variable | Example | Description |
-|----------|---------|-------------|
-| `RPC_URL_<chainId>` | `https://eth-mainnet.g.alchemy.com/v2/xxx` | Blockchain connection |
-| `LIQUIDATION_PRIVATE_KEY` | `0xabc123...` | Your bot wallet's private key |
-| `EXECUTOR_ADDRESS_<chainId>` | `0xdef456...` | Your deployed executor contract |
-| `POSTGRES_DATABASE_URL` | `postgresql://...` | Database connection |
-
-### Start the Bot
-
-**Railway:** The bot auto-starts after adding variables. Check the "Logs" tab to see output.
-
-**VPS:** Run `pnpm liquidate`
-
-### What to Expect
-
-1. **Indexing Phase:** Bot downloads blockchain history (can take 10-60 minutes per chain)
-2. **Monitoring Phase:** Bot watches for liquidatable positions
-3. **Execution Phase:** When opportunities arise, bot executes liquidations
-
-You'll see logs like:
-```
-[INFO] Starting liquidation bot...
-[INFO] Indexing chain 8453 (Base)... 45% complete
-[INFO] Chain 8453 fully indexed. Watching for opportunities...
-[INFO] Found liquidatable position: 0x... (potential profit: $X.XX)
-```
-
----
-
-## Step 7: Monitor Your Bot
-
-### Railway Dashboard
-
-1. Go to your Railway project
-2. Click on the bot service
-3. View "Logs" for real-time activity
-4. Check "Metrics" for CPU/memory usage
-
-### Health Checks
-
-The bot exposes a health endpoint. You can set up monitoring with:
-
-- [UptimeRobot](https://uptimerobot.com) (free)
-- [Better Uptime](https://betteruptime.com)
-
-### Alerts
-
-Set up notifications for:
-- Bot going offline
-- Successful liquidations (check logs)
-- Error patterns
-
----
-
-## Claiming Your Profits
+### Claiming Your Profits
 
 Profits accumulate in your Executor contract. To withdraw:
 
 ```bash
-# On your local machine or VPS with the bot installed
-pnpm skim --chainId 8453 --token 0xTOKEN_ADDRESS --recipient 0xYOUR_WALLET
+# Replace with your values
+pnpm skim --chainId 8453 --token 0xTOKEN_ADDRESS --recipient 0xYOUR_WALLET_ADDRESS
 ```
 
-Or transfer tokens manually by interacting with your executor contract.
+**Common tokens on Base:**
+- WETH: `0x4200000000000000000000000000000000000006`
+- USDC: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
 
-**Common tokens to claim:**
-- WETH: `0x4200000000000000000000000000000000000006` (Base)
-- USDC: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` (Base)
+---
+
+## Stopping and Restarting
+
+### Stop the Bot
+
+Press `Ctrl + C` in the terminal where the bot is running.
+
+### Stop the Database
+
+```bash
+docker-compose down
+```
+
+### Restart Everything
+
+```bash
+# Start database
+docker-compose up -d
+
+# Start bot
+pnpm liquidate
+```
+
+### Keep Bot Running When You Close Terminal (Advanced)
+
+**Windows:** Use a tool like [NSSM](https://nssm.cc/) to run as a service.
+
+**Mac/Linux:** Use `screen` or `pm2`:
+
+```bash
+# Install pm2
+npm install -g pm2
+
+# Start bot with pm2
+pm2 start "pnpm liquidate" --name liquidation-bot
+
+# View logs
+pm2 logs liquidation-bot
+
+# Stop
+pm2 stop liquidation-bot
+
+# Auto-start on reboot
+pm2 startup
+pm2 save
+```
 
 ---
 
 ## Troubleshooting
 
-### Bot won't start
+### "Docker is not running"
 
-| Issue | Solution |
-|-------|----------|
-| "RPC_URL not found" | Check environment variable names match chain IDs |
-| "Invalid private key" | Ensure key starts with `0x` and is 64 characters |
-| "Executor not deployed" | Deploy executor contract first |
+Make sure Docker Desktop is open. Look for the whale icon in your system tray.
 
-### Indexing takes forever
+### "pnpm: command not found"
 
-- This is normal for first run
-- Ethereum mainnet can take 30-60+ minutes
-- Use `PONDER_SERVICE_URL` if available for faster sync
+Run `npm install -g pnpm` again, then open a NEW terminal window.
 
-### Transaction failures
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "Insufficient funds" | Not enough ETH for gas | Add more ETH to wallet |
-| "Nonce too low" | Transaction stuck | Wait or increase gas |
-| "Execution reverted" | Someone else liquidated first | This is normal, keep running |
-
-### Database errors
+### "Cannot connect to database"
 
 ```bash
-# Railway: Delete and recreate PostgreSQL service
-# VPS: Reset with
-docker-compose down -v
+# Restart the database
+docker-compose down
 docker-compose up -d
 ```
 
----
+### "Invalid private key"
 
-## Security Best Practices
+Make sure your private key:
+- Starts with `0x`
+- Has 66 characters total (0x + 64 hex characters)
+- Has no spaces or extra characters
 
-### DO ✅
+### Bot crashes immediately
 
-- Use a dedicated wallet with only necessary funds
-- Keep private keys in environment variables (never in code)
-- Use Railway's encrypted variables feature
-- Regularly withdraw profits to a secure wallet
-- Start with small amounts to test
-
-### DON'T ❌
-
-- Never use your main wallet
-- Never commit private keys to GitHub
-- Don't share your RPC URLs publicly
-- Don't run on untrusted servers
-
-### Recommended Security Setup
-
+Check your `.env` file for typos. Each line should be:
 ```
-Main Wallet ──► Bot Wallet ──► Executor Contract ──► Profits
-     │              │                                    │
-     │         (limited funds)                           │
-     │                                                   │
-     └────────────── Withdraw when accumulated ◄────────┘
+VARIABLE_NAME=value
 ```
+No spaces around the `=` sign!
+
+### Indexing stuck or very slow
+
+- First run takes 10-60 minutes per chain
+- Ethereum mainnet takes longest
+- If stuck for hours, try resetting:
+
+```bash
+docker-compose down -v
+docker-compose up -d
+pnpm liquidate
+```
+
+### "Insufficient funds"
+
+Add more ETH to your bot wallet for gas fees.
 
 ---
 
 ## FAQ
 
-### How much can I make?
+### Can I close my computer?
 
-There's no guaranteed income. Profits depend on:
-- Market volatility
-- Competition from other bots
-- Gas costs
-- Which chains you run on
-
-Some bots make nothing, others make significant profits. Start small!
+No—the bot stops when your computer sleeps or shuts down. For 24/7 operation, consider:
+- A dedicated cheap computer (old laptop)
+- A Raspberry Pi
+- A cloud VPS (~$5/month)
 
 ### Which chain should I start with?
 
-**For $250 budget:** Start with **Base** because:
-- Lower gas costs (~10x cheaper than Ethereum)
-- Active Morpho Blue markets
-- Good RPC support
+**Base** is recommended for beginners:
+- Lower gas costs
+- Active markets
+- Good liquidity
 
-### Do I need to keep my computer running?
+### How much can I make?
 
-No! That's why we use Railway or a VPS—they run 24/7 in the cloud.
+Honestly? It varies wildly. Some bots make nothing, others make good profit. Factors:
+- Market volatility
+- Competition
+- Gas prices
+- Your chain choice
 
-### Can I run on multiple chains?
+**Start small and learn!**
 
-Yes! Add more `RPC_URL_<chainId>` and `EXECUTOR_ADDRESS_<chainId>` variables. But start with one chain first.
+### Can I run multiple chains?
+
+Yes! Add more entries to your `.env`:
+
+```bash
+# Base
+RPC_URL_8453=...
+EXECUTOR_ADDRESS_8453=...
+LIQUIDATION_PRIVATE_KEY_8453=...
+
+# Ethereum
+RPC_URL_1=...
+EXECUTOR_ADDRESS_1=...
+LIQUIDATION_PRIVATE_KEY_1=...
+```
 
 ### How do I update the bot?
 
-**Railway:** Push to your GitHub fork, Railway auto-deploys
-
-**VPS:**
 ```bash
-cd morpho-blue-liquidation-bot
+# If you used git:
 git pull
 pnpm install
-pm2 restart liquidation-bot
+
+# If you downloaded ZIP:
+# Download new ZIP, replace files (keep your .env!)
+pnpm install
 ```
 
-### What if I lose money?
+### Is this safe?
 
-- Gas fees are a cost even if liquidations fail
-- Start with small amounts you can afford to lose
-- Monitor closely in the first weeks
+As safe as you make it:
+- ✅ Use a dedicated wallet with limited funds
+- ✅ Never share your private key
+- ✅ Don't run on public computers
+- ✅ Keep your `.env` file private
 
 ---
 
-## Next Steps
+## Quick Reference Card
 
-1. ✅ Deploy on one chain (Base recommended)
-2. ✅ Monitor for a week
-3. ✅ Add more chains if profitable
-4. ✅ Consider running your own Ponder service for speed
-5. ✅ Join the [Morpho Discord](https://discord.morpho.org) for community support
+```
+┌─────────────────────────────────────────────────────────┐
+│  MORPHO LIQUIDATION BOT - QUICK COMMANDS                │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  START DATABASE:     docker-compose up -d               │
+│  START BOT:          pnpm liquidate                     │
+│  STOP BOT:           Ctrl + C                           │
+│  STOP DATABASE:      docker-compose down                │
+│                                                         │
+│  CLAIM PROFITS:                                         │
+│  pnpm skim --chainId 8453 --token 0x... --recipient 0x..│
+│                                                         │
+│  RESET DATABASE:     docker-compose down -v             │
+│                      docker-compose up -d               │
+│                                                         │
+│  VIEW LOGS (pm2):    pm2 logs liquidation-bot           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Need Help?
 
-- **Morpho Documentation:** [docs.morpho.org](https://docs.morpho.org)
 - **Morpho Discord:** [discord.morpho.org](https://discord.morpho.org)
-- **GitHub Issues:** [Report bugs here](https://github.com/morpho-org/morpho-blue-liquidation-bot/issues)
+- **Morpho Docs:** [docs.morpho.org](https://docs.morpho.org)
+- **GitHub Issues:** [Report bugs](https://github.com/morpho-org/morpho-blue-liquidation-bot/issues)
 
 ---
 
-*Good luck with your liquidation bot! Remember: start small, learn the ropes, and scale up gradually.* 🚀
+*Good luck! Start small, learn the process, and scale up when you're comfortable.* 🚀
